@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .forms import CreatePollForm, RateForm
-from .models import Poll, CreateUserForm, Rate
+from .forms import CreatePollForm, CreateEntityForm, CreateRatingQuestionForm
+from .models import Poll, CreateUserForm, Entity
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 
@@ -46,41 +46,50 @@ def logoutPage(request):
     return redirect('login')
 
 def home(request):
-    polls = Poll.objects.all()
-    context = {'polls':polls}
+    question = Entity.objects.all()
+    #polls = Poll.objects.all()
+    context = {'question': question}
     return render(request,'home.html',context)
 
-def ratehome(request):
-    rates = Rate.objects.all()
-    context = {'rates':rates}
-    return render(request,'rateHome.html',context)
+def homeRating(request):
+    rate_question = Entity.objects.all()
+    context = {'rate_question':rate_question}
+    return render(request, 'homeRating.html', context)
 
 def create(request):
     if request.method == 'POST':
-        form = CreatePollForm(request.POST)
-        if form.is_valid():
-            form.save()
+        poll_form = CreatePollForm(request.POST)
+        entity_form = CreateEntityForm(request.POST)
+        if poll_form.is_valid() and entity_form.is_valid():
+            entity = entity_form.save()
+            newpoll = poll_form.save(commit=False)
+            newpoll.questionId = entity
+            newpoll.save()
             return redirect('home')
     else:
-        form = CreatePollForm()
-    context = {'form':form}
+        poll_form = CreatePollForm()
+        entity_form = CreateEntityForm()
+    context = {'poll_form':poll_form, 'entity_form': entity_form,}
     return render(request,'create.html',context)
 
-def createRating(request):
-    if request.method == 'POST':
-        form = RateForm(request.POST)       
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+def createRatingQuestion(request):
+    if request.method =='POST':
+        rating_form = CreateRatingQuestionForm(request.POST)
+        if rating_form.is_valid():
+            entity = rating_form.save()
     else:
-        form = RateForm()
-    context = {'form':form}
-    return render(request,'createRate.html',context)
+        rating_form = CreateRatingQuestionForm()
+    context = {'rating_form':rating_form}
+    return render(request,'createRating.html',context)
 
-def vote(request, poll_id):
-    poll = Poll.objects.get(pk=poll_id)
+
+def vote(request, entity_id):
+    entity = Entity.objects.get(pk=entity_id)
+    poll = Poll.objects.get(questionId=entity)
+    
     if request.method == 'POST':
         selected = request.POST['poll']
+
         if selected == 'option1':
             poll.option_count_one +=1
         elif selected == 'option2':
@@ -95,11 +104,13 @@ def vote(request, poll_id):
             return HttpResponse(400,'Invalid')
         poll.save()
 
-        return redirect('result',poll_id)
-    context = {'poll':poll}
+        return redirect('result',entity_id)
+    context = {'entity':entity, 'poll':poll }
     return render(request,'vote.html',context)
 
-def result(request, poll_id):
-    poll = Poll.objects.get(pk=poll_id)
-    context = {'poll':poll}
+def result(request, entity_id):
+    entity = Entity.objects.get(pk=entity_id)
+    poll = Poll.objects.get(questionId=entity)
+    
+    context = {'entity':entity,'poll':poll}
     return render(request,'result.html',context)

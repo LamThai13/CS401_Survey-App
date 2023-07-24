@@ -1,0 +1,30 @@
+{%extends 'base.html'%}
+{% load static %}
+{% block title %}
+Rate now
+{% endblock title %}
+{% block content %}
+<div class="container ">
+    <div class="col-lg-8 col-lg-offset-2 ">
+                
+            <h3 class="panel-title">Available Rating</h3>
+            <div class="container ">   
+                <ul class="list-group">
+                    {% for question in question  %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>{{entity.rate_question}}</strong>
+                        <div class = "col text-center">
+                            <span class="fa fa-star fa-3x checked"></span>
+                            <span class="fa fa-star fa-3x checked"></span>
+                            <span class="fa fa-star fa-3x checked"></span>
+                            <span class="fa fa-star fa-3x checked"></span>
+                            <span class="fa fa-star fa-3x "></span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>       
+    </div>
+</div>
+{% endblock content %}
+

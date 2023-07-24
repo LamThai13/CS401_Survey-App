@@ -1,15 +1,20 @@
 from django.forms import ModelForm
-from .models import Poll,  Rate
+from django import forms
+from .models import Poll, Entity, Rating
 
 
 class CreatePollForm(ModelForm):
     class Meta:
         model = Poll
-        fields = ['question', 'option_one', 'option_two', 'option_three', 'option_four', 'option_five']
+        fields = ['option_one', 'option_two', 'option_three', 'option_four', 'option_five']
 
-
-class RateForm(ModelForm):
+class CreateEntityForm(ModelForm):
     class Meta:
-        model = Rate
-        fields = ['question', 'rate_one', 'rate_two', 'rate_three', 'rate_four', 'rate_five']
+        model = Entity
+        fields = ['question']
+
+class CreateRatingQuestionForm(ModelForm):
+    class Meta:
+        model = Entity
+        fields = ['rate_question']
 

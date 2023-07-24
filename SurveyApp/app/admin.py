@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Poll, Rate
+from .models import Poll, Entity
 # Register your models here.
 admin.site.register(Poll)
-admin.site.register(Rate)
+admin.site.register(Entity)
